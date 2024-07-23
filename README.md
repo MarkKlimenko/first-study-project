@@ -12,7 +12,7 @@
 curl http://localhost:8080/api/v1/users/12345
 ```
 
-*Create user*
+*Create TEST user *
 
 ```shell
 curl --location 'http://localhost:8080/api/v1/users' \
