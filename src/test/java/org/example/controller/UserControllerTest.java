@@ -2,6 +2,7 @@ package org.example.controller;
 
 import org.example.controller.dto.UserCreateRequest;
 import org.example.controller.dto.UserResponse;
+import org.example.controller.dto.UserUpdateRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,9 +23,9 @@ class UserControllerTest {
     void getUserTest() {
         // create user
         UserCreateRequest createRequest = new UserCreateRequest();
-        createRequest.login = "testLogin1";
-        createRequest.name = "testName1";
-        createRequest.lastName = "testLastName1";
+        createRequest.login = "testLoginGet";
+        createRequest.name = "testNameGet";
+        createRequest.lastName = "testLastNameGet";
 
         UserResponse createResponse = createUser(createRequest);
 
@@ -47,9 +48,9 @@ class UserControllerTest {
     @Test
     void createUserTest() {
         UserCreateRequest request = new UserCreateRequest();
-        request.login = "testLogin1";
-        request.name = "testName1";
-        request.lastName = "testLastName1";
+        request.login = "testLoginCreate";
+        request.name = "testNameCreate";
+        request.lastName = "testLastNameCreate";
 
         UserResponse response = createUser(request);
 
@@ -62,10 +63,57 @@ class UserControllerTest {
 
     @Test
     void updateUserTest() {
+        // create user
+        UserCreateRequest createRequest = new UserCreateRequest();
+        createRequest.login = "testLoginUpdate";
+        createRequest.name = "testNameUpdate";
+        createRequest.lastName = "testLastNameUpdate";
+
+        UserResponse createResponse = createUser(createRequest);
+
+        // update user
+        UserUpdateRequest updateRequest = new UserUpdateRequest();
+        updateRequest.name = "testNameAfterUpdate";
+        updateRequest.lastName = "testLastNameAfterUpdate";
+
+        UserResponse updateResponse = webTestClient.put()
+                .uri("api/v1/users/" + createResponse.id)
+                .bodyValue(updateRequest)
+                .exchange()
+                .expectStatus().isOk()
+                .returnResult(UserResponse.class)
+                .getResponseBody()
+                .blockFirst();
+
+        assertEquals(createResponse.id, updateResponse.id);
+        assertEquals(createRequest.login, updateResponse.login);
+        assertEquals(createResponse.creationDate, updateResponse.creationDate);
+
+        assertEquals(updateRequest.name, updateResponse.name);
+        assertEquals(updateRequest.lastName, updateResponse.lastName);
     }
 
     @Test
     void deleteUserTest() {
+        // create user
+        UserCreateRequest createRequest = new UserCreateRequest();
+        createRequest.login = "testLoginDelete";
+        createRequest.name = "testNameDelete";
+        createRequest.lastName = "testLastNameDelete";
+
+        UserResponse createResponse = createUser(createRequest);
+
+        // delete user
+        webTestClient.delete()
+                .uri("api/v1/users/" + createResponse.id)
+                .exchange()
+                .expectStatus().isOk();
+
+        // get user
+        webTestClient.get()
+                .uri("api/v1/users/" + createResponse.id)
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
     private UserResponse createUser(UserCreateRequest request) {
