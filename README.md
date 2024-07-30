@@ -83,3 +83,10 @@ values (2, 'Bob', 'Spanch');
 
 select * from example;
 ```
+
+## Connect to database JDBC
+
+- https://jdbc.postgresql.org/
+- https://mvnrepository.com/artifact/org.postgresql/postgresql
+- https://jdbc.postgresql.org/documentation/use/
+
