@@ -4,6 +4,8 @@ import org.example.controller.dto.UserCreateRequest;
 import org.example.controller.dto.UserResponse;
 import org.example.controller.dto.UserUpdateRequest;
 import org.example.entity.User;
+import org.example.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,11 +17,15 @@ import java.util.UUID;
 
 @Service
 public class UserService {
+    @Autowired
+    UserRepository userRepository;
 
     Map<String, User> store = new HashMap<>();
 
     public UserResponse getUser(String id) {
-        User userEntity = store.get(id);
+        User userEntity = userRepository.getUser(id);
+
+        /*User userEntity = store.get(id);*/
 
         if (userEntity == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Actor Not Found");
@@ -43,7 +49,9 @@ public class UserService {
         userEntity.lastName = user.lastName;
         userEntity.creationDate = LocalDateTime.now();
 
-        store.put(userEntity.id, userEntity);
+        userRepository.createUser(userEntity);
+
+        //store.put(userEntity.id, userEntity);
 
         UserResponse userResponse = new UserResponse();
         userResponse.id = userEntity.id;
