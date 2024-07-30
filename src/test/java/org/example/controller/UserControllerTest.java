@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -22,10 +23,12 @@ class UserControllerTest {
     @Test
     void getUserTest() {
         // create user
+        String postfix = UUID.randomUUID().toString();
+
         UserCreateRequest createRequest = new UserCreateRequest();
-        createRequest.login = "testLoginGet";
-        createRequest.name = "testNameGet";
-        createRequest.lastName = "testLastNameGet";
+        createRequest.login = "testLoginGet" + postfix;
+        createRequest.name = "testNameGet" + postfix;
+        createRequest.lastName = "testLastNameGet" + postfix;
 
         UserResponse createResponse = createUser(createRequest);
 
@@ -47,10 +50,12 @@ class UserControllerTest {
 
     @Test
     void createUserTest() {
+        String postfix = UUID.randomUUID().toString();
+
         UserCreateRequest request = new UserCreateRequest();
-        request.login = "testLoginCreate";
-        request.name = "testNameCreate";
-        request.lastName = "testLastNameCreate";
+        request.login = "testLoginCreate" + postfix;
+        request.name = "testNameCreate" + postfix;
+        request.lastName = "testLastNameCreate" + postfix;
 
         UserResponse response = createUser(request);
 
