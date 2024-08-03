@@ -4,26 +4,23 @@ import org.example.controller.dto.UserCreateRequest;
 import org.example.controller.dto.UserResponse;
 import org.example.controller.dto.UserUpdateRequest;
 import org.example.entity.User;
+import org.example.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
 public class UserService {
-
-    Map<String, User> store = new HashMap<>();
+    @Autowired
+    private UserRepository userRepository;
 
     public UserResponse getUser(String id) {
-        User userEntity = store.get(id);
-
-        if (userEntity == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Actor Not Found");
-        }
+        User userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
 
         UserResponse userResponse = new UserResponse();
         userResponse.id = userEntity.id;
@@ -43,7 +40,7 @@ public class UserService {
         userEntity.lastName = user.lastName;
         userEntity.creationDate = LocalDateTime.now();
 
-        store.put(userEntity.id, userEntity);
+        userRepository.save(userEntity);
 
         UserResponse userResponse = new UserResponse();
         userResponse.id = userEntity.id;
@@ -56,16 +53,13 @@ public class UserService {
     }
 
     public UserResponse updateUser(String id, UserUpdateRequest user) {
-        User userEntity = store.get(id);
-
-        if (userEntity == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Actor Not Found");
-        }
+        User userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
 
         userEntity.name = user.name;
         userEntity.lastName = user.lastName;
 
-        store.put(userEntity.id, userEntity);
+        userRepository.save(userEntity);
 
         UserResponse userResponse = new UserResponse();
         userResponse.id = userEntity.id;
@@ -78,6 +72,6 @@ public class UserService {
     }
 
     public void deleteUser(String id) {
-        store.remove(id);
+        userRepository.deleteById(id);
     }
 }
